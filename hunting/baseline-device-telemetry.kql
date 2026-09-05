@@ -1,0 +1,20 @@
+// ==============================================================================
+// Query: Baseline Host Identification & Build Audit
+// Purpose: Verify host registration, OS build level, and sensor agent version
+// Table: DeviceInfo
+// ==============================================================================
+
+DeviceInfo
+| where DeviceName =~ "dc1" or DeviceName has "LAB"
+| summarize arg_max(Timestamp, *) by DeviceId
+| project 
+    Timestamp,
+    DeviceName,
+    OSPlatform,
+    OSBuild,
+    OSArchitecture,
+    ClientVersion,
+    PublicIP,
+    IsAzureADJoined,
+    LoggedOnUsers
+| sort by Timestamp desc

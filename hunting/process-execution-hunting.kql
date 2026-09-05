@@ -1,0 +1,18 @@
+// ==============================================================================
+// Query: Process Lineage & Command-Line Telemetry Audit
+// Purpose: Audit executed processes, command-line arguments, and parent relationships
+// Table: DeviceProcessEvents
+// ==============================================================================
+
+DeviceProcessEvents
+| where DeviceName =~ "dc1"
+| project 
+    Timestamp,
+    DeviceName,
+    FileName,
+    ProcessCommandLine,
+    InitiatingProcessFileName,
+    InitiatingProcessCommandLine,
+    AccountName
+| sort by Timestamp desc
+| take 50
