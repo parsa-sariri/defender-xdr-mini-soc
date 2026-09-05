@@ -70,6 +70,8 @@ defender-xdr-mini-soc/
 │   └── rule-templates.md              # MITRE-mapped custom detection templates
 ├── simulations/
 │   └── README.md                      # Controlled, non-destructive telemetry generators
+├── investigations/
+│   └── case-study-01.md               # Baseline sensor validation & LOLBAS interception
 └── docs/
     └── methodology.md                 # Sanitization standards & verification protocol
 ```
