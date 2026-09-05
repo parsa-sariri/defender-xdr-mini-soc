@@ -3,12 +3,22 @@
 ## 1. Executive Summary & Objective
 * **Purpose:** Establish baseline telemetry health and validate client-side heuristic detection on an onboarded Windows Server 2025 node.
 * **Scope:** Controlled execution of a Living-off-the-Land Binary (LOLBAS) ingress tool transfer pattern (`certutil.exe`).
-* **Result:** Real-time interception by Microsoft Defender Antivirus (`Sense.exe` EDR channel), generation of heuristic security alert `daedfcb22-5f66-4150-8ab5-0eb50f305fea_1`, and automated containment of the execution thread.
+* **Result:** Real-time interception by Microsoft Defender Antivirus (`Sense.exe` EDR channel), generation of heuristic security alert (`REDACTED-LAB-001`), and automated containment of the execution thread.
 
 ---
 
-## 2. Test Execution Details
-* **Target Node:** `dc1` (Windows Server 2025 Datacenter, Build `26100.33296`)
+## 2. Epistemic Discipline: What This Case Does NOT Demonstrate
+To maintain rigorous scientific and engineering integrity, it is explicitly stated that this baseline validation does **not** demonstrate:
+- Advanced threat hunting across complex datasets
+- Custom detection engineering or novel behavioral analytics
+- Persistence detection or privilege escalation analysis
+- Adversary emulation beyond a controlled, single-command LOLBAS verification
+- Threat actor attribution
+
+---
+
+## 3. Test Execution Details
+* **Target Node:** `LAB-WIN2025` (Windows Server 2025 Datacenter, Build `26100.33296`)
 * **Execution Context:** `Administrator` (Elevated CLI session)
 * **MITRE ATT&CK Mapping:**
   * **Tactic:** Ingress Tool Transfer (`TA0011` - Command and Control)
@@ -21,7 +31,7 @@ certutil.exe -urlcache -split -f "https://www.google.com" C:\Users\Administrator
 
 ---
 
-## 3. Host & Portal Evidence Observations
+## 4. Host & Portal Evidence Observations
 
 ### A. Host-Level Interception:
 * **Process Termination:** Immediate process failure with return code `Access is denied`.
@@ -30,12 +40,12 @@ certutil.exe -urlcache -split -f "https://www.google.com" C:\Users\Administrator
 
 ### B. Microsoft Defender XDR Portal Telemetry:
 * **Alert Title:** `An active 'Ceprolad' malware in a command line was prevented from executing`
-* **Alert ID:** `daedfcb22-5f66-4150-8ab5-0eb50f305fea_1`
+* **Alert ID:** `REDACTED-LAB-001`
 * **Severity:** `Low`
 * **Category:** `Malware`
 * **Detection Technology:** `Client, Heuristic`
 * **Status:** `New` / `Action: Blocked`
-* **Impacted Assets:** Device `dc1`, User `Administrator`
+* **Impacted Assets:** Device `LAB-WIN2025`, User `Administrator`
 
 ---
 
