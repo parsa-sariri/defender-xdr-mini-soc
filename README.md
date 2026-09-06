@@ -107,5 +107,5 @@ In adherence to enterprise security hygiene:
 
 ## 📜 6. References & Standards
 - [Microsoft Defender XDR Documentation](https://learn.microsoft.com/en-us/defender-xdr/)
-- [Microsoft Applied Skills: APL-5004](https://learn.microsoft.com/en-us/credentials/applied-skills/defend-against-cyberthreats-with-microsoft-defender-xdr/)
+- [Microsoft Applied Skills: APL-5004 — Defend against cyberthreats with Microsoft Defender XDR](https://learn.microsoft.com/en-us/credentials/applied-skills/defend-against-cyberthreats-with-microsoft-defender-xdr/) (Verified Credential ID: `EB4EF3E17238EF07`)
 - [MITRE ATT&CK Enterprise Matrix (v16)](https://attack.mitre.org/)
