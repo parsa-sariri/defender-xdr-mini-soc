@@ -63,9 +63,11 @@ DeviceProcessEvents
     CommandsUsed = make_set(ProcessCommandLine),
     ToolsUsed = make_set(FileName),
     FirstSeen = min(Timestamp),
-    LastSeen = max(Timestamp)
+    LastSeen = max(Timestamp),
+    ReportId = any(ReportId)
     by DeviceId, DeviceName, AccountName, bin(Timestamp, 1h)
 | where ReconCommandCount >= 3
+| project Timestamp, DeviceId, ReportId, DeviceName, AccountName, ReconCommandCount, CommandsUsed, ToolsUsed, FirstSeen, LastSeen
 ```
 
 * **Query Execution Performance:** `00:01.57` latency, `Low` resource consumption.

@@ -3,6 +3,7 @@
 // Table: DeviceProcessEvents
 // MITRE ATT&CK: Discovery (T1033, T1082, T1016, T1057)
 // Threshold: >= 3 distinct discovery binaries executed within a 1-hour window
+// Output Schema: Optimized with Timestamp, DeviceId, and ReportId per Microsoft Best Practices
 // ==============================================================================
 
 DeviceProcessEvents
@@ -19,6 +20,8 @@ DeviceProcessEvents
     CommandsUsed = make_set(ProcessCommandLine),
     ToolsUsed = make_set(FileName),
     FirstSeen = min(Timestamp),
-    LastSeen = max(Timestamp)
+    LastSeen = max(Timestamp),
+    ReportId = any(ReportId)
     by DeviceId, DeviceName, AccountName, bin(Timestamp, 1h)
 | where ReconCommandCount >= 3
+| project Timestamp, DeviceId, ReportId, DeviceName, AccountName, ReconCommandCount, CommandsUsed, ToolsUsed, FirstSeen, LastSeen
