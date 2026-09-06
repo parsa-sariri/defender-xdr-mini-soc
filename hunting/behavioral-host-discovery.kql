@@ -1,0 +1,24 @@
+// ==============================================================================
+// Query: Behavioral Host Discovery & Living-Off-The-Land Hunting Analytic
+// Table: DeviceProcessEvents
+// MITRE ATT&CK: Discovery (T1033, T1082, T1016, T1057)
+// Threshold: >= 3 distinct discovery binaries executed within a 1-hour window
+// ==============================================================================
+
+DeviceProcessEvents
+| where FileName in~ (
+    "whoami.exe",
+    "hostname.exe",
+    "ipconfig.exe",
+    "systeminfo.exe",
+    "tasklist.exe",
+    "quser.exe"
+)
+| summarize 
+    ReconCommandCount = dcount(FileName), 
+    CommandsUsed = make_set(ProcessCommandLine),
+    ToolsUsed = make_set(FileName),
+    FirstSeen = min(Timestamp),
+    LastSeen = max(Timestamp)
+    by DeviceId, DeviceName, AccountName, bin(Timestamp, 1h)
+| where ReconCommandCount >= 3
