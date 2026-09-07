@@ -72,7 +72,8 @@ defender-xdr-mini-soc/
 │   └── README.md                      # Controlled, non-destructive telemetry generators
 ├── investigations/
 │   ├── case-study-01.md               # Baseline sensor validation & LOLBAS interception
-│   └── case-study-02.md               # Behavioral discovery hunting & custom detection rule
+│   ├── case-study-02.md               # Behavioral discovery hunting & custom detection rule
+│   └── case-study-03.md               # Behavioral lineage scoring & corroborating telemetry
 └── docs/
     └── methodology.md                 # Sanitization standards & verification protocol
 ```

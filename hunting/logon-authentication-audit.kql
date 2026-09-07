@@ -1,0 +1,58 @@
+// ==============================================================================
+// Analytic: Logon & Authentication Audit / Anomalous Access Patterns
+// Author: Parsa Sariri Ajili (parsa-sariri/defender-xdr-mini-soc)
+// Platform: Microsoft Defender XDR / Advanced Hunting
+// Schema Table: DeviceLogonEvents
+// MITRE ATT&CK: TA0008 (Lateral Movement), TA0006 (Credential Access), TA0001 (Initial Access)
+// ==============================================================================
+
+// ------------------------------------------------------------------------------
+// Hypothesis:
+// Excessive failed authentication attempts followed by a successful logon, or
+// unexpected remote interactive / network logons on a domain server (dc1/LAB-DC01)
+// indicate brute-force attempts, credential spraying, or lateral movement.
+// ------------------------------------------------------------------------------
+
+let TimeWindow = 24h;
+let FailedThreshold = 5;
+
+// Query 1: Failed Logon Spikes followed by Success (Brute-Force / Spraying Triage)
+DeviceLogonEvents
+| where Timestamp >= ago(TimeWindow)
+| where ActionType in ("LogonFailed", "LogonSuccess")
+| summarize 
+    FailedCount = countif(ActionType == "LogonFailed"),
+    SuccessCount = countif(ActionType == "LogonSuccess"),
+    FailedProtocols = make_set_if(Protocol, ActionType == "LogonFailed"),
+    DistinctFailedUsers = dcountif(AccountName, ActionType == "LogonFailed"),
+    TargetDevices = make_set(DeviceName),
+    FirstAttempt = min(Timestamp),
+    LastAttempt = max(Timestamp),
+    ReportId = any(ReportId)
+    by RemoteIP, bin(Timestamp, 1h)
+| where FailedCount >= FailedThreshold
+| extend SuspiciousPattern = case(
+    FailedCount >= 10 and SuccessCount > 0, "High: Multiple Failures Followed by Success",
+    FailedCount >= 10 and SuccessCount == 0, "Medium: High Volume Authentication Failure",
+    "Low: Baseline Anomaly"
+)
+| project Timestamp, RemoteIP, FailedCount, SuccessCount, DistinctFailedUsers, FailedProtocols, TargetDevices, SuspiciousPattern, ReportId;
+
+// ------------------------------------------------------------------------------
+// Query 2: Remote Interactive & Network Logons to Enterprise Servers
+// Filters specifically for LogonType 3 (Network) and LogonType 10 (RemoteInteractive/RDP)
+// ------------------------------------------------------------------------------
+DeviceLogonEvents
+| where Timestamp >= ago(TimeWindow)
+| where ActionType == "LogonSuccess"
+| where LogonType in (3, 10) // 3: Network, 10: RemoteInteractive (RDP)
+| where not(AccountName endswith "$" or AccountName =~ "SYSTEM" or AccountName =~ "LOCAL SERVICE")
+| summarize 
+    LogonCount = count(),
+    DistinctLogonTypes = make_set(LogonType),
+    RemoteIPs = make_set(RemoteIP),
+    FirstSeen = min(Timestamp),
+    LastSeen = max(Timestamp)
+    by DeviceName, AccountName, AccountDomain, bin(Timestamp, 4h)
+| project Timestamp, DeviceName, AccountDomain, AccountName, DistinctLogonTypes, RemoteIPs, LogonCount, FirstSeen, LastSeen
+| sort by LogonCount desc;
